@@ -1,5 +1,6 @@
 # Brick Breaker
 
+Jeu du casse brique en C++ dans le cadre de l'UE Programmation Avancée.
 
 
 ## Getting started
