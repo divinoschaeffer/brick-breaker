@@ -1,7 +1,7 @@
 # Makefile pour compiler le code SDL en C++
 
 # Compilateur
-CXX = clang
+CXX = clang++
 
 # Options de compilation
 CXXFLAGS =
