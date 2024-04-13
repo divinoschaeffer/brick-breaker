@@ -1,9 +1,11 @@
+# Pour générer l'exécutable à la racine du projet
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+
 cmake_minimum_required(VERSION 3.10)
 project(BrickBreaker VERSION 1.0.0)
 
-add_executable(BrickBreaker Main.cpp)
-
+add_executable(BrickBreaker src/Main.cpp
+                            src/HelloWorld.cpp)
 #[[
 # Trouver le package SDL2
 find_package(SDL2 REQUIRED)
@@ -43,3 +45,5 @@ target_include_directories(
         ${SDL2_IMAGE_INCLUDE_PATH}
         ${SDL2_TTF_INCLUDE_PATH}
 )
+
+include_directories(${CMAKE_SOURCE_DIR}/include)
