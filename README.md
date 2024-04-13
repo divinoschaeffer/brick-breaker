@@ -9,14 +9,11 @@ Jeu du casse brique en C++ dans le cadre de l'UE Programmation Avancée.
 (Pour divino : Suivre cette doc pour installer SDL2/SDL2_ttf/SDL2_image sur Mac
 https://www.studyplan.dev/sdl-dev/sdl-setup-mac)
 
-Pour compiler le projet :
-
+Pour compiler le projet, on peut utiliser le makefile fourni. Il est nécessaire d'avoir les librairies SDL2, SDL2_ttf et SDL2_image installées sur votre machine.
 ```
-mkdir cmake-build-debug && cd cmake-build-debug
-cmake ..
 make
-cd ..
 ```
+La commande `clean` existe et permet de supprimer l'exécutable généré et de supprimer le cmake-build-debug.
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
