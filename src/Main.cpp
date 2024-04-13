@@ -1,4 +1,3 @@
-#include <GameLoop.h>
 #include <iostream>
 #include <HelloWorld.h>
 #include <GameLoop.h>
