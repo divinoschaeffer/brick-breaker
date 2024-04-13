@@ -11,7 +11,7 @@ add_executable(BrickBreaker src/Main.cpp
                             src/Rectangle.cpp
                             src/Paddle.cpp
                             src/Brick.cpp
-                            )
+                            src/GameLoop.cpp)
 #[[
 # Trouver le package SDL2
 find_package(SDL2 REQUIRED)
