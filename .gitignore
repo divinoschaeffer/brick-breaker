@@ -2,6 +2,7 @@
 .vscode
 *.pdf
 **/.DS_Store
+BrickBreaker
 # Compiled Object files
 *.slo
 *.lo
