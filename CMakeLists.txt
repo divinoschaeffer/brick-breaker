@@ -4,6 +4,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 cmake_minimum_required(VERSION 3.10)
 project(BrickBreaker VERSION 1.0.0)
 
+set(CMAKE_CXX_STANDARD 11)
+
 add_executable(BrickBreaker src/Main.cpp
                             src/HelloWorld.cpp)
 #[[
