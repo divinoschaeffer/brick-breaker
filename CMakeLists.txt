@@ -12,6 +12,7 @@ add_executable(BrickBreaker src/Main.cpp
                             src/Paddle.cpp
                             src/Brick.cpp
                             src/GameLoop.cpp
+                            src/Text.cpp
                             src/SelectableText.cpp)
 
 #[[
