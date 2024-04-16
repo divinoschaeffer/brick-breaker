@@ -8,6 +8,13 @@
 #include "HelloWorld.h"
 #include "Ball.h"
 #include "Paddle.h"
+
+#define WINDOW_X 640
+#define WINDOW_Y 480
+#define PAD_W 100
+#define PAD_H 10
+#define PAD_SPEED 60
+#include "Paddle.h"
 #include "Brick.h"
 
 #define WINDOW_X 640

@@ -7,19 +7,20 @@ project(BrickBreaker VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(BrickBreaker src/Main.cpp
-                            src/HelloWorld.cpp
-                            src/Rectangle.cpp
-                            src/Paddle.cpp
-                            src/Brick.cpp
-                            src/GameLoop.cpp
-                            src/Text.cpp
-                            src/SelectableText.cpp
-                            src/Ball.cpp
-                            src/Vector2.cpp
-                            src/Rectangle.cpp
-                            src/Paddle.cpp
-                            src/Brick.cpp
-                            )
+        src/HelloWorld.cpp
+        src/Rectangle.cpp
+        src/Paddle.cpp
+        src/Brick.cpp
+        src/GameLoop.cpp
+        src/Text.cpp
+        src/SelectableText.cpp
+        src/Ball.cpp
+        src/Vector2.cpp
+        src/Rectangle.cpp
+        src/Paddle.cpp
+        src/Brick.cpp
+)
+
 #[[
 # Trouver le package SDL2
 find_package(SDL2 REQUIRED)
