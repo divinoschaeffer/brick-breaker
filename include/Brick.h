@@ -11,7 +11,7 @@ public:
     void hit(); // Méthode pour indiquer qu'une brique a été touchée
     bool isDestroyed() const;
 
-    // Méthodes getters pour obtenir la position, la taille et le nombre de points de vie de la brique
+    // Méthodes getters pour obtenir la position et la taille de la brique
     int getX() const;
     int getY() const;
     int getW() const;

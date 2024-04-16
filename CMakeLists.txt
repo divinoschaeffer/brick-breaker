@@ -18,6 +18,7 @@ add_executable(BrickBreaker src/Main.cpp
                             src/Vector2.cpp
                             src/Rectangle.cpp
                             src/Paddle.cpp
+                            src/Brick.cpp
                             )
 #[[
 # Trouver le package SDL2
