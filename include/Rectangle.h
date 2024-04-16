@@ -16,6 +16,8 @@ public:
     int getX() const;
     int getY() const;
 
+    int getW() const;
+
 private:
     SDL_Renderer* renderer;
     SDL_Rect rect;

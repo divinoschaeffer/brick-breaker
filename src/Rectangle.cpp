@@ -34,3 +34,7 @@ int Rectangle::getX() const {
 int Rectangle::getY() const {
     return rect.y;
 }
+
+int Rectangle::getW() const {
+    return rect.w;
+}
