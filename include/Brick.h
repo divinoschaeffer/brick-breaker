@@ -5,23 +5,24 @@
 
 class Brick {
 public:
-    Brick(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color);
+    Brick(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, int hitPoints = 2); // Défaut à 2 points de vie
 
     void draw() const;
+    void hit(); // Méthode pour indiquer qu'une brique a été touchée
     bool isDestroyed() const;
-    void destroy();
 
-    // Méthodes getters pour obtenir la position et la taille de la brique
+    // Méthodes getters pour obtenir la position, la taille et le nombre de points de vie de la brique
     int getX() const;
     int getY() const;
     int getW() const;
     int getH() const;
+    int getHitPoints() const;
 
 private:
     SDL_Renderer* renderer;
     SDL_Rect rect;
     SDL_Color color;
-    bool destroyed;
+    int hitPoints; // Nombre de points de vie de la brique
 };
 
 #endif /* BRICK_H */
