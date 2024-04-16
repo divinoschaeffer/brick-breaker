@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include "HelloWorld.h"
+#include "Ball.h"
 #include "Paddle.h"
 #include "Brick.h"
 
@@ -119,6 +120,17 @@ void HelloWorld::OpenHelloWorld()
     Uint32 lastTime = SDL_GetTicks();
     const Uint32 targetFrameTime = 1000 / 60; // Cible de 60 images par seconde
 
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS; // Milliseconds per frame
+
+    Uint32 frameStart;
+    int frameTime;
+    Ball b1;
+    b1.velocity = {1, -1};
+    b1.position = {320, 240};
+    b1.speed = 10.0f;
+    // Draw the ball
+    b1.color = {255, 0, 0, 255};
     // Wait for the user to close the window
     bool quit = false;
     while (!quit) {
@@ -172,6 +184,27 @@ void HelloWorld::OpenHelloWorld()
             }
 
             SDL_RenderPresent(renderer);
+        }
+        frameStart = SDL_GetTicks();
+
+        // Clear the renderer
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        b1.draw(renderer);
+
+        // Update the ball
+        b1.updatePosition(1, 640, 480);
+
+        // Update the screen
+        SDL_RenderPresent(renderer);
+
+        // Calculate the time it took to render the frame
+        frameTime = SDL_GetTicks() - frameStart;
+
+        // Delay the frame if needed
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
         }
     }
 
