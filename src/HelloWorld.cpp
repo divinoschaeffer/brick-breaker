@@ -92,20 +92,28 @@ void HelloWorld::OpenHelloWorld()
 
             SDL_Event event;
             while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT) {
-                    quit = true;
-                }
-                else if (event.type == SDL_KEYDOWN) {
-                    switch (event.key.keysym.sym) {
-                        case SDLK_LEFT:
-                            paddle.moveLeft(PAD_SPEED , WINDOW_X);
-                            break;
-                        case SDLK_RIGHT:
-                            paddle.moveRight(PAD_SPEED , WINDOW_X);
-                            break;
-                        default:
-                            break;
-                    }
+                switch (event.type) {
+                    case SDL_QUIT:
+                        quit = true;
+                        break;
+                    case SDL_KEYDOWN:
+                        switch (event.key.keysym.sym) {
+                            case SDLK_LEFT:
+                                paddle.moveLeft(PAD_SPEED , WINDOW_X);
+                                break;
+                            case SDLK_RIGHT:
+                                paddle.moveRight(PAD_SPEED , WINDOW_X);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case SDL_MOUSEMOTION:
+                        // Déplacer la raquette en fonction de la position de la souris
+                        paddle.setPosition(event.motion.x - PAD_W / 2, WINDOW_Y - 40);
+                        break;
+                    default:
+                        break;
                 }
             }
 
