@@ -2,14 +2,46 @@
 // Created by Bryan on 13/04/2024.
 //
 
+#include <vector>
 #include "HelloWorld.h"
 #include "Paddle.h"
+#include "Brick.h"
 
 #define WINDOW_X 640
 #define WINDOW_Y 480
 #define PAD_W 100
 #define PAD_H 10
 #define PAD_SPEED 60
+
+// Fonction pour créer une liste de briques
+std::vector<Brick> createBrickList(SDL_Renderer* renderer, int windowWidth, int brickWidth, int brickHeight) {
+    std::vector<Brick> bricks;
+
+    // Nombre de briques par ligne
+    int bricksPerRow = windowWidth / brickWidth;
+
+    // Espace horizontal entre les briques
+    int horizontalSpace = (windowWidth - bricksPerRow * brickWidth) / (bricksPerRow + 1);
+
+    // Position initiale des briques sur l'axe horizontal
+    int initialX = horizontalSpace;
+
+    // Position initiale des briques sur l'axe vertical
+    int initialY = 10; // Réglage de la position verticale initiale des briques
+
+    // Créer deux lignes de briques en haut de la fenêtre
+    for (int row = 0; row < 4; ++row) {
+        for (int i = 0; i < bricksPerRow; ++i) {
+            int x = initialX + i * (brickWidth + horizontalSpace);
+            int y = initialY + row * (brickHeight + 10); // Espacement vertical entre les lignes de briques
+            Brick brick(renderer, x, y, brickWidth, brickHeight, {255, 0, 0, 255}); // Création de la brique rouge
+            bricks.push_back(brick);
+        }
+    }
+
+    return bricks;
+}
+
 
 HelloWorld::HelloWorld() {
     OpenHelloWorld();
@@ -38,6 +70,8 @@ void HelloWorld::OpenHelloWorld()
     }
 
     Paddle paddle(renderer, WINDOW_X / 2 - (PAD_W / 2), WINDOW_Y - 40, PAD_W, PAD_H);
+
+    std::vector<Brick> bricks = createBrickList(renderer, WINDOW_X, 60, 20); // Réglage de la largeur et de la hauteur des briques
 
     // Variables pour le calcul du temps
     Uint32 lastTime = SDL_GetTicks();
@@ -79,6 +113,9 @@ void HelloWorld::OpenHelloWorld()
             SDL_RenderClear(renderer);
 
             paddle.draw();
+            for (const auto& brick : bricks) {
+                brick.draw();
+            }
 
             SDL_RenderPresent(renderer);
         }
