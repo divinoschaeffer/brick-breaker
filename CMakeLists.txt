@@ -15,8 +15,10 @@ add_executable(BrickBreaker src/Main.cpp
                             src/Text.cpp
                             src/SelectableText.cpp
                             src/Ball.cpp
-                            src/Vector2.cpp)
-
+                            src/Vector2.cpp
+                            src/Rectangle.cpp
+                            src/Paddle.cpp
+                            )
 #[[
 # Trouver le package SDL2
 find_package(SDL2 REQUIRED)
