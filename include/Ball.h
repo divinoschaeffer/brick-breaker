@@ -13,8 +13,6 @@ class Ball {
 public:
     Vector2 position;
     Vector2 velocity;
-    Vector2 direction;
-    Vector2 lastImpact;
     float radius;
     float speed;
     SDL_Color color;

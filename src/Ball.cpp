@@ -6,8 +6,8 @@
 
 Ball::Ball() {
     position = Vector2(0, 0);
-    velocity = Vector2(0, 0);
-    radius = 0.0f;
+    velocity = Vector2(1, -1);
+    radius = 10.0f;
     speed = 10.0f;
     color = {255, 255, 255, 255}; // White color
     texture = nullptr; // Will be set later
