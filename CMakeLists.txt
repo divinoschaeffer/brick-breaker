@@ -13,7 +13,9 @@ add_executable(BrickBreaker src/Main.cpp
                             src/Brick.cpp
                             src/GameLoop.cpp
                             src/Text.cpp
-                            src/SelectableText.cpp)
+                            src/SelectableText.cpp
+                            src/Ball.cpp
+                            src/Vector2.cpp)
 
 #[[
 # Trouver le package SDL2
