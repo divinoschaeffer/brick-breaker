@@ -4,10 +4,16 @@
 
 #include "GameLoop.h"
 
+#include <Paddle.h>
+
 #include "SelectableText.h"
 #include "Text.h"
 #define HEIGHT 800
 #define WIDTH 640
+#define PAD_W 100
+#define PAD_H 10
+#define PAD_SPEED 60
+
 
 int menuSelection = 0;
 
@@ -142,38 +148,52 @@ void GameLoop::FirstPageLoop() {
 }
 
 void GameLoop::Loop() {
+    Paddle paddle(renderer, WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
+
     bool running = true;
+
+    // Variables pour le calcul du temps
+    Uint32 lastTime = SDL_GetTicks();
+    const Uint32 targetFrameTime = 1000 / 60; // Cible de 60 images par seconde
+
+    // Calcul du temps écoulé depuis la dernière trame
+
     while (running) {
-        // Gestion des événements
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = false;
-            } else if (event.type == SDL_KEYDOWN) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_LEFT:
-                        std::cout << "Flèche gauche pressée" << std::endl;
-                    break;
-                    case SDLK_RIGHT:
-                        std::cout << "Flèche droite pressée" << std::endl;
+        Uint32 currentTime = SDL_GetTicks();
+        Uint32 elapsedTime = currentTime - lastTime;
+        // Si le temps écoulé dépasse le temps cible pour une trame, effectuer une nouvelle trame
+        if (elapsedTime >= targetFrameTime) {
+            // Mettre à jour le temps de la dernière trame
+            lastTime = currentTime;
+            // Gestion des événements
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    running = false;
+                } else if (event.type == SDL_KEYDOWN) {
+                    switch (event.key.keysym.sym) {
+                        case SDLK_LEFT:
+                            std::cout << "Flèche gauche pressée" << std::endl;
+                        paddle.moveLeft(PAD_SPEED , WIDTH);
                         break;
-                    case SDLK_UP:
-                        std::cout << "Flèche haut pressée" << std::endl;
-                        menuSelection = (menuSelection + 1) % 2;
-                    break;
-                    case SDLK_DOWN:
-                        std::cout << "Flèche bas pressée" << std::endl;
-                        menuSelection = (menuSelection - 1) % 2;
-                    break;
-                    case SDLK_ESCAPE:
-                        std::cout << "Sortie du jeu." << std::endl;
+                        case SDLK_RIGHT:
+                            std::cout << "Flèche droite pressée" << std::endl;
+                        paddle.moveRight(PAD_SPEED , WIDTH);
+                        break;
+                        case SDLK_ESCAPE:
+                            std::cout << "Sortie du jeu." << std::endl;
                         running = false;
                         break;
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
+
+        // Rafraichissement de la page
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
+        paddle.draw();
         SDL_RenderPresent(renderer);
     }
 }
