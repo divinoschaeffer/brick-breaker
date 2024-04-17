@@ -6,7 +6,8 @@
 int main(int argc, char const *argv[])
 {
     //HelloWorld();
-    GameLoop();
+    GameLoop G = GameLoop();
+    G.FirstPageLoop();
     return 0;
 }
 
