@@ -16,7 +16,6 @@
 #define PAD_H 10
 #define PAD_SPEED 60
 
-
 // Fonction pour créer des briques à partir d'un fichier ASCII
 std::vector<Brick> createBricksFromFile2(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
     std::vector<Brick> bricks;
