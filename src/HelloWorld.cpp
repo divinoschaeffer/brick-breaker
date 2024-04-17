@@ -2,6 +2,8 @@
 // Created by Bryan on 13/04/2024.
 //
 
+#include <filesystem> // Pour accéder aux fonctionnalités de système de fichiers
+#include <fstream>
 #include <vector>
 #include "HelloWorld.h"
 #include "Paddle.h"
@@ -13,31 +15,70 @@
 #define PAD_H 10
 #define PAD_SPEED 60
 
-// Fonction pour créer une liste de briques
-std::vector<Brick> createBrickList(SDL_Renderer* renderer, int windowWidth, int brickWidth, int brickHeight) {
+// Fonction pour créer des briques à partir d'un fichier ASCII
+std::vector<Brick> createBricksFromFile(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
     std::vector<Brick> bricks;
 
-    // Nombre de briques par ligne
-    int bricksPerRow = windowWidth / brickWidth;
+    // Construire le chemin complet du fichier en utilisant le dossier "grilles"
+    std::string filepath = "grilles/" + filename;
 
-    // Espace horizontal entre les briques
-    int horizontalSpace = (windowWidth - bricksPerRow * brickWidth) / (bricksPerRow + 1);
-
-    // Position initiale des briques sur l'axe horizontal
-    int initialX = horizontalSpace;
-
-    // Position initiale des briques sur l'axe vertical
-    int initialY = 10; // Réglage de la position verticale initiale des briques
-
-    // Créer deux lignes de briques en haut de la fenêtre
-    for (int row = 0; row < 4; ++row) {
-        for (int i = 0; i < bricksPerRow; ++i) {
-            int x = initialX + i * (brickWidth + horizontalSpace);
-            int y = initialY + row * (brickHeight + 10); // Espacement vertical entre les lignes de briques
-            Brick brick(renderer, x, y, brickWidth, brickHeight, {255, 0, 0, 255}); // Création de la brique rouge
-            bricks.push_back(brick);
-        }
+    // Vérifier si le fichier existe
+    if (!std::__fs::filesystem::exists(filepath)) {
+        std::cerr << "File does not exist: " << filepath << std::endl;
+        return bricks;
     }
+
+    // Ouvrir le fichier
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "Unable to open file: " << filepath << std::endl;
+        return bricks;
+    }
+
+    // Calculer la position y de la première ligne de briques
+    int startY = 10;
+
+    // Lire le fichier ligne par ligne
+    std::string line;
+    int y = 0;
+    while (std::getline(file, line)) {
+        // Calculer la position y de la ligne pour la centrer verticalement dans la fenêtre
+        int lineY = startY + y * (brickHeight + 10);
+
+        // Calculer l'espacement horizontal entre les briques
+        int horizontalSpace = (windowWidth - line.size() * brickWidth) / (line.size() + 1);
+
+        int x = 0;
+        for (char c : line) {
+            // Calculer la position x de la brique
+            int brickX = horizontalSpace + x * (brickWidth + horizontalSpace);
+
+            int brickY = lineY; // Position y de la brique
+            switch (c) {
+                case '0':
+                    // Brique indestructible
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 255, 255, 255}, -1);
+                    break;
+                case '1':
+                    // Brique normale avec 1 point de vie
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 0, 0, 255}, 1);
+                    break;
+                case '2':
+                    // Brique normale avec 2 points de vie
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{0, 255, 0, 255}, 2);
+                    break;
+                case '3':
+                    // Brique normale avec 3 points de vie
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{0, 255, 255, 255}, 3);
+                    break;
+            }
+            x++;
+        }
+        y++;
+    }
+
+    // Fermer le fichier
+    file.close();
 
     return bricks;
 }
@@ -71,7 +112,7 @@ void HelloWorld::OpenHelloWorld()
 
     Paddle paddle(renderer, WINDOW_X / 2 - (PAD_W / 2), WINDOW_Y - 40, PAD_W, PAD_H);
 
-    std::vector<Brick> bricks = createBrickList(renderer, WINDOW_X, 60, 20); // Réglage de la largeur et de la hauteur des briques
+    std::vector<Brick> bricks = createBricksFromFile(renderer, "grille1.txt", 60, 20, WINDOW_X, WINDOW_Y); // Réglage de la largeur et de la hauteur des briques
 
     // Variables pour le calcul du temps
     Uint32 lastTime = SDL_GetTicks();
