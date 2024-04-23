@@ -97,13 +97,13 @@ void GameLoop::FirstPageLoop() {
     SelectableText playTxt(renderer, defaultColor, selectedColor, "Play", defaultFont, selectedFont);
     SelectableText quitTxt(renderer, defaultColor, selectedColor, "Quit", defaultFont, selectedFont);
     // Rafraichissement de la page
-    bool running = true;
-
-    while (running) {
+    bool firstPage = true;
+    bool gamePage = false;
+    while (firstPage) {
         // Gestion des événements
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                running = false;
+                firstPage = false;
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_LEFT:
@@ -124,14 +124,15 @@ void GameLoop::FirstPageLoop() {
                     break;
                     case SDLK_ESCAPE:
                         std::cout << "Sortie du jeu." << std::endl;
-                        running = false;
+                        firstPage = false;
                     break;
                     case SDLK_RETURN:
                         std::cout << "Selection du menu" << std::endl;
                         if (menuSelection == 0) {
-                            Loop();
+                            firstPage = false;
+                            gamePage = true;
                         } else {
-                            running = false;
+                            firstPage = false;
                         }
                     default:
                         break;
@@ -144,6 +145,9 @@ void GameLoop::FirstPageLoop() {
         playTxt.render(renderer, WIDTH / 2,  HEIGHT / 7, menuSelection == 0);
         quitTxt.render(renderer, WIDTH / 2, 2 * HEIGHT / 7, menuSelection == 1);
         SDL_RenderPresent(renderer);
+        if (gamePage) {
+            Loop();
+        }
     }
 }
 
