@@ -7,13 +7,6 @@
 #include <vector>
 #include "HelloWorld.h"
 #include "Paddle.h"
-
-#define WINDOW_X 640
-#define WINDOW_Y 480
-#define PAD_W 100
-#define PAD_H 10
-#define PAD_SPEED 60
-#include "Paddle.h"
 #include "Brick.h"
 
 #define WINDOW_X 640
@@ -22,8 +15,9 @@
 #define PAD_H 10
 #define PAD_SPEED 60
 
+
 // Fonction pour créer des briques à partir d'un fichier ASCII
-std::vector<Brick> createBricksFromFile(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
+std::vector<Brick> createBricksFromFile2(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
     std::vector<Brick> bricks;
 
     // Construire le chemin complet du fichier en utilisant le dossier "grilles"
@@ -119,7 +113,7 @@ void HelloWorld::OpenHelloWorld()
 
     Paddle paddle(renderer, WINDOW_X / 2 - (PAD_W / 2), WINDOW_Y - 40, PAD_W, PAD_H);
 
-    std::vector<Brick> bricks = createBricksFromFile(renderer, "grille1.txt", 60, 20, WINDOW_X, WINDOW_Y); // Réglage de la largeur et de la hauteur des briques
+    std::vector<Brick> bricks = createBricksFromFile2(renderer, "grille1.txt", 60, 20, WINDOW_X, WINDOW_Y); // Réglage de la largeur et de la hauteur des briques
 
     // Variables pour le calcul du temps
     Uint32 lastTime = SDL_GetTicks();
@@ -151,6 +145,10 @@ void HelloWorld::OpenHelloWorld()
                                 break;
                             case SDLK_RIGHT:
                                 paddle.moveRight(PAD_SPEED , WINDOW_X);
+                                break;
+                            case SDLK_ESCAPE:
+                                std::cout << "Sortie du jeu." << std::endl;
+                                quit = true;
                                 break;
                             default:
                                 break;
