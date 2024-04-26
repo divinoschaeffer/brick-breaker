@@ -7,6 +7,7 @@
 #include <SelectableText.h>
 #include <Text.h>
 #include <Brick.h>
+#include <Ball.h>
 #include <filesystem> // Pour accéder aux fonctionnalités de système de fichiers
 #include <fstream>
 #include <vector>
@@ -14,11 +15,18 @@
 #define HEIGHT 800
 #define WIDTH 640
 #define PAD_W 100
-#define PAD_H 10
-#define PAD_SPEED 60
+#define PAD_H 20
+#define PAD_SPEED 10
 
 
 int menuSelection = 0;
+// Couleurs de briques
+std::vector<SDL_Color> brickColors = {
+    {0, 0, 0, 0},
+    {252, 169, 133, 255}, // Rouge
+    {255, 237, 81, 255}, // Jaune
+    {133, 202, 93, 255} // Vert
+};
 
 GameLoop::GameLoop() {
     window = nullptr;
@@ -45,8 +53,6 @@ GameLoop::~GameLoop() {
     }
     SDL_Quit();
 }
-
-
 
 /*
  *  On initialise la fenêtre du jeu, le début de la partie, donc on init la balle, la raquette et les briques
@@ -154,8 +160,8 @@ void GameLoop::FirstPageLoop() {
     }
 }
 
-std::vector<Brick> createBricksFromFile(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
-    std::vector<Brick> bricks;
+std::vector<Brick> * createBricksFromFile(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
+    std::vector<Brick> * bricks = new std::vector<Brick>;
 
     // Construire le chemin complet du fichier en utilisant le dossier "grilles"
     std::string filepath = "grilles/" + filename;
@@ -181,7 +187,7 @@ std::vector<Brick> createBricksFromFile(SDL_Renderer* renderer, const std::strin
     int y = 0;
     while (std::getline(file, line)) {
         // Calculer la position y de la ligne pour la centrer verticalement dans la fenêtre
-        int lineY = startY + y * (brickHeight + 10);
+        int lineY = startY + y * (brickHeight + 1);
 
         // Calculer l'espacement horizontal entre les briques
         int horizontalSpace = (windowWidth - line.size() * brickWidth) / (line.size() + 1);
@@ -194,20 +200,12 @@ std::vector<Brick> createBricksFromFile(SDL_Renderer* renderer, const std::strin
             int brickY = lineY; // Position y de la brique
             switch (c) {
                 case '0':
-                    // Brique indestructible
-                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 255, 255, 255}, -1);
+                    // Brique indestructible (blanche)
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 255, 255, 255}, -1);
                     break;
-                case '1':
-                    // Brique normale avec 1 point de vie
-                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 0, 0, 255}, 1);
-                    break;
-                case '2':
-                    // Brique normale avec 2 points de vie
-                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{0, 255, 0, 255}, 2);
-                    break;
-                case '3':
-                    // Brique normale avec 3 points de vie
-                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{0, 255, 255, 255}, 3);
+                default:
+                    int hp = c - '0';
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[hp], hp);
                     break;
             }
             x++;
@@ -226,10 +224,19 @@ std::vector<Brick> createBricksFromFile(SDL_Renderer* renderer, const std::strin
  * Boucle principale de jeu.
  */
 void GameLoop::Loop() {
+    // Initialisation de la balle
+    Ball b1;
+    b1.velocity = {0, 1};
+    b1.position = {320, 240};
+    b1.speed = 10.0f;
+    b1.color = {255, 0, 0, 255};
+
+    // Initialisation de la plancha
     Paddle paddle(renderer, WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
 
-    std::vector<Brick> bricks = createBricksFromFile(renderer, "grille1.txt", 60, 20, WIDTH, HEIGHT); // Réglage de la largeur et de la hauteur des briques
-
+    std::vector<Brick> * bricks = createBricksFromFile(renderer, "grille1.txt", 60, 20, WIDTH, HEIGHT); // Réglage de la largeur et de la hauteur des briques
+    b1.bricks = bricks;
+    b1.paddle = paddle;
     // Variables pour le calcul du temps
     Uint32 lastTime = SDL_GetTicks();
     const Uint32 targetFrameTime = 1000 / 60; // Cible de 60 images par seconde
@@ -256,10 +263,12 @@ void GameLoop::Loop() {
                     case SDL_KEYDOWN:
                         switch (event.key.keysym.sym) {
                             case SDLK_LEFT:
-                                paddle.moveLeft(PAD_SPEED , WIDTH);
+                                //paddle.moveLeft(PAD_SPEED , WIDTH);
+                                paddle.velocity = {-1, 0};
                                 break;
                             case SDLK_RIGHT:
-                                paddle.moveRight(PAD_SPEED , WIDTH);
+                                //paddle.moveRight(PAD_SPEED , WIDTH);
+                                paddle.velocity = {1, 0};
                                 break;
                             case SDLK_ESCAPE:
                                 std::cout << "Sortie du jeu." << std::endl;
@@ -274,15 +283,29 @@ void GameLoop::Loop() {
                         paddle.setPosition(event.motion.x - PAD_W / 2, HEIGHT - 40);
                         break;
                     default:
+                        paddle.velocity.x = 0;
                         break;
                 }
             }
-
+            b1.paddle = paddle;
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
 
+            // Mise à jour de l'affichage
+            b1.draw(renderer);
+            b1.updatePosition(WIDTH, HEIGHT);
             paddle.draw();
-            for (const auto& brick : bricks) {
+            paddle.updatePosition(PAD_SPEED, WIDTH);
+
+            // Retrait des briques si elles n'ont plus de points de vie
+            for (int i = bricks->size() - 1; i >= 0; --i) {
+                if ((*bricks)[i].getHitPoints() <= 0) {
+                    bricks->erase(bricks->begin() + i);
+                }
+            }
+            // Dessiner les briques + Mise à jour de la couleur selon les points de vie de la brique
+            for (auto& brick : *bricks) {
+                brick.color = brickColors[brick.getHitPoints()];
                 brick.draw();
             }
 
