@@ -1,6 +1,7 @@
 #ifndef BRICK_H
 #define BRICK_H
 
+#include <vector>
 #include <SDL2/SDL.h>
 
 class Brick {
@@ -17,11 +18,10 @@ public:
     int getW() const;
     int getH() const;
     int getHitPoints() const;
-
+    SDL_Color color;
 private:
     SDL_Renderer* renderer;
     SDL_Rect rect;
-    SDL_Color color;
     int hitPoints; // Nombre de points de vie de la brique
 };
 
