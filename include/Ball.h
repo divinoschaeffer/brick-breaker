@@ -8,6 +8,9 @@
 #include <Vector2.h>
 #include <SDL2/SDL.h>
 #include <SDL_image.h>
+#include <Brick.h>
+#include <vector>
+#include <Paddle.h>
 
 class Ball {
 public:
@@ -17,12 +20,15 @@ public:
     float speed;
     SDL_Color color;
     SDL_Texture* texture; // Texture de la balle si on en met une
+    std::vector<Brick> * bricks;
+    Paddle paddle;
 
     Ball();
     void getTexture();
     void draw(SDL_Renderer* renderer) const;
     void checkCollision(int screenWidth, int screenHeight);
-    void updatePosition(int DeltaTime, int screenWidth, int screenHeight);
+    void checkEveryBricks();
+    void updatePosition(int screenWidth, int screenHeight);
 };
 
 
