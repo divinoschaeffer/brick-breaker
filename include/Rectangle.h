@@ -17,7 +17,7 @@ public:
     int getY() const;
 
     int getW() const;
-
+    int getH() const;
 private:
     SDL_Renderer* renderer;
     SDL_Rect rect;

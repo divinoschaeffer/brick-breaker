@@ -38,3 +38,7 @@ int Rectangle::getY() const {
 int Rectangle::getW() const {
     return rect.w;
 }
+
+int Rectangle::getH() const {
+    return rect.h;
+}
