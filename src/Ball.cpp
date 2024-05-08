@@ -14,6 +14,36 @@ Ball::Ball() : paddle(Paddle(nullptr, 0, 0, 0, 0)) {
     paddle = Paddle(nullptr, 0, 0, 0, 0);
 }
 
+ // Constructeur de copie
+    Ball::Ball(const Ball& other) : 
+        position(other.position),
+        velocity(other.velocity),
+        radius(other.radius),
+        speed(other.speed),
+        color(other.color),
+        texture(nullptr), // Will be set later
+        bricks(other.bricks), // Copying the pointer, not the data
+        paddle(other.paddle) // Copying the Paddle object
+    {}
+
+Vector2 Ball::getPosition(){
+    return this->position;
+}
+
+// Implémentation du constructeur avec spécification de paddle et bricks
+Ball::Ball(Paddle& pdl, std::vector<Brick>* brs) :
+    paddle(pdl),
+    bricks(brs)
+{
+    // Les autres attributs sont initialisés avec des valeurs par défaut
+    position = Vector2(320, 240);
+    velocity = Vector2(0, 1);
+    radius = 10.0f;
+    speed = 10.0f;
+    color = {255, 0, 0, 255}; // White color
+    texture = nullptr; // Will be set later
+}
+
 void Ball::draw(SDL_Renderer* renderer) const {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
     for (int w = 0; w < radius * 2; w++)
@@ -85,4 +115,8 @@ void Ball::checkEveryBricks() {
             return;
         }
     }
+}
+
+bool::Ball::isOut(int height) const {
+    return position.y > height;
 }

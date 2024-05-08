@@ -27,6 +27,9 @@ std::vector<SDL_Color> brickColors = {
     {255, 237, 81, 255}, // Jaune
     {133, 202, 93, 255} // Vert
 };
+void::GameLoop::addBall(Ball& b){
+    balls.push_back(b);
+}
 
 GameLoop::GameLoop() {
     window = nullptr;
@@ -156,6 +159,8 @@ void GameLoop::FirstPageLoop() {
         SDL_RenderPresent(renderer);
         if (gamePage) {
             Loop();
+            gamePage = false;
+            firstPage = true;
         }
     }
 }
@@ -224,19 +229,17 @@ std::vector<Brick> * createBricksFromFile(SDL_Renderer* renderer, const std::str
  * Boucle principale de jeu.
  */
 void GameLoop::Loop() {
-    // Initialisation de la balle
-    Ball b1;
-    b1.velocity = {0, 1};
-    b1.position = {320, 240};
-    b1.speed = 10.0f;
-    b1.color = {255, 0, 0, 255};
-
+    
     // Initialisation de la plancha
     Paddle paddle(renderer, WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
 
     std::vector<Brick> * bricks = createBricksFromFile(renderer, "grille1.txt", 60, 20, WIDTH, HEIGHT); // Réglage de la largeur et de la hauteur des briques
-    b1.bricks = bricks;
-    b1.paddle = paddle;
+
+    // Initialisation de la balle
+    Ball b1(paddle,bricks);
+
+    addBall(b1);
+
     // Variables pour le calcul du temps
     Uint32 lastTime = SDL_GetTicks();
     const Uint32 targetFrameTime = 1000 / 60; // Cible de 60 images par seconde
@@ -272,6 +275,8 @@ void GameLoop::Loop() {
                                 break;
                             case SDLK_ESCAPE:
                                 std::cout << "Sortie du jeu." << std::endl;
+                                balls.clear();
+                                //delete bricks;
                                 quit = true;
                                 break;
                             default:
@@ -287,13 +292,22 @@ void GameLoop::Loop() {
                         break;
                 }
             }
-            b1.paddle = paddle;
+            
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
 
             // Mise à jour de l'affichage
-            b1.draw(renderer);
-            b1.updatePosition(WIDTH, HEIGHT);
+            for (int i = 0; i < balls.size(); ++i) {
+                if (balls[i].isOut(HEIGHT - 10)) {
+                    // std::cout << "out" << std::endl;
+                    balls.erase(balls.begin() + i);
+                } else {
+                    balls[i].paddle = paddle;
+                    balls[i].draw(renderer);
+                    balls[i].updatePosition(WIDTH, HEIGHT);
+                }
+            }
+
             paddle.draw();
             paddle.updatePosition(PAD_SPEED, WIDTH);
 
@@ -307,6 +321,11 @@ void GameLoop::Loop() {
             for (auto& brick : *bricks) {
                 brick.color = brickColors[brick.getHitPoints()];
                 brick.draw();
+            }
+
+            if(balls.empty()){
+                delete bricks;
+                quit = true;
             }
 
             SDL_RenderPresent(renderer);

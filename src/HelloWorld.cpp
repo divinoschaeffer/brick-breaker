@@ -194,7 +194,7 @@ void HelloWorld::OpenHelloWorld()
         b1.draw(renderer);
 
         // Update the ball
-        b1.updatePosition(1, 640, 480);
+        b1.updatePosition(640, 480);
 
         // Update the screen
         SDL_RenderPresent(renderer);

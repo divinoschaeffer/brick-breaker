@@ -8,6 +8,7 @@
 #include <SDL_ttf.h>
 #include <SDL_image.h>
 #include <iostream>
+#include <Ball.h>
 
 class GameLoop {
 public:
@@ -19,10 +20,12 @@ public:
     SDL_Color defaultColor;
     SDL_Color selectedColor;
     GameLoop();
+    std::vector<Ball> balls;
 
     void WindowInit();
     void FirstPageLoop();
     void Loop();
+    void addBall(Ball& b);
     ~GameLoop();
 };
 

@@ -24,11 +24,16 @@ public:
     Paddle paddle;
 
     Ball();
+    Ball(const Ball& other);
+    // Constructeur avec spécification de paddle et bricks
+    Ball(Paddle& pdl, std::vector<Brick>* brs);
     void getTexture();
     void draw(SDL_Renderer* renderer) const;
     void checkCollision(int screenWidth, int screenHeight);
     void checkEveryBricks();
     void updatePosition(int screenWidth, int screenHeight);
+    bool isOut(int height) const;
+    Vector2 getPosition();
 };
 
 
