@@ -9,6 +9,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include <Ball.h>
+#include "Window.h"
 
 class GameLoop {
 public:
@@ -20,9 +21,9 @@ public:
     SDL_Color defaultColor;
     SDL_Color selectedColor;
     GameLoop();
+    Window win;
     std::vector<Ball> balls;
 
-    void WindowInit();
     void FirstPageLoop();
     void Loop();
     void addBall(Ball& b);

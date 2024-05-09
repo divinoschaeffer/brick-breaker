@@ -31,83 +31,17 @@ void::GameLoop::addBall(Ball& b){
     balls.push_back(b);
 }
 
-GameLoop::GameLoop() {
-    window = nullptr;
-    renderer = nullptr;
-    defaultFont = nullptr;
-    selectedFont = nullptr;
+GameLoop::GameLoop(): win("Brick Breaker", WIDTH, HEIGHT) {
     defaultColor = {255, 255, 255, 255};  // Blanc
     selectedColor = {255, 0, 0, 255};  // Rouge
-    WindowInit();
 }
 
-GameLoop::~GameLoop() {
-    if (window != nullptr) {
-        SDL_DestroyWindow(window);
-    }
-    if (renderer != nullptr) {
-        SDL_DestroyRenderer(renderer);
-    }
-    if (defaultFont != nullptr) {
-        TTF_CloseFont(defaultFont);
-    }
-    if (selectedFont != nullptr) {
-        TTF_CloseFont(selectedFont);
-    }
-    SDL_Quit();
-}
-
-/*
- *  On initialise la fenêtre du jeu, le début de la partie, donc on init la balle, la raquette et les briques
- */
-void GameLoop::WindowInit()
-{
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-
-    // Create a window
-    window = SDL_CreateWindow("Brick Breaker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
-    if (window == nullptr) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-
-    // Create a renderer
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == nullptr) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-
-    // Clear the renderer
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-
-    // Initialize SDL_ttf
-    if (TTF_Init() == -1) {
-        std::cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << std::endl;
-        exit(1);
-    }
-    // Initialize the fonts
-    defaultFont = TTF_OpenFont("fonts/minecraft_font.ttf", 32);
-    if (defaultFont == nullptr) {
-        std::cerr << "Font could not be loaded! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-    selectedFont = TTF_OpenFont("fonts/minecraft_font.ttf", 36);
-    if (defaultFont == nullptr) {
-        std::cerr << "Font could not be loaded! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-}
+GameLoop::~GameLoop() {}
 
 void GameLoop::FirstPageLoop() {
-    Text title(renderer, defaultColor, "Brick Breaker", defaultFont);
-    SelectableText playTxt(renderer, defaultColor, selectedColor, "Play", defaultFont, selectedFont);
-    SelectableText quitTxt(renderer, defaultColor, selectedColor, "Quit", defaultFont, selectedFont);
+    Text title(win.getRenderer(), defaultColor, "Brick Breaker", win.getDefaultFont());
+    SelectableText playTxt(win.getRenderer(), defaultColor, selectedColor, "Play", win.getDefaultFont(), win.getSelectedFont());
+    SelectableText quitTxt(win.getRenderer(), defaultColor, selectedColor, "Quit", win.getDefaultFont(), win.getSelectedFont());
     // Rafraichissement de la page
     bool firstPage = true;
     bool gamePage = false;
@@ -127,12 +61,12 @@ void GameLoop::FirstPageLoop() {
                     case SDLK_UP:
                         std::cout << "Flèche haut pressée" << std::endl;
                         menuSelection = (menuSelection + 1) % 2;
-                        SDL_RenderPresent(renderer);
+                        win.present();
                     break;
                     case SDLK_DOWN:
                         std::cout << "Flèche bas pressée" << std::endl;
                         menuSelection = (menuSelection + 1) % 2;
-                        SDL_RenderPresent(renderer);
+                        win.present();
                     break;
                     case SDLK_ESCAPE:
                         std::cout << "Sortie du jeu." << std::endl;
@@ -152,11 +86,11 @@ void GameLoop::FirstPageLoop() {
             }
         }
         // Rafraichissement de la page
-        SDL_RenderClear(renderer);
-        title.render(renderer, WIDTH / 2, 50);
-        playTxt.render(renderer, WIDTH / 2,  HEIGHT / 7, menuSelection == 0);
-        quitTxt.render(renderer, WIDTH / 2, 2 * HEIGHT / 7, menuSelection == 1);
-        SDL_RenderPresent(renderer);
+        win.clear();
+        title.render(win.getRenderer(), WIDTH / 2, 50);
+        playTxt.render(win.getRenderer(), WIDTH / 2,  HEIGHT / 7, menuSelection == 0);
+        quitTxt.render(win.getRenderer(), WIDTH / 2, 2 * HEIGHT / 7, menuSelection == 1);
+        win.present();
         if (gamePage) {
             Loop();
             gamePage = false;
@@ -231,9 +165,9 @@ std::vector<Brick> * createBricksFromFile(SDL_Renderer* renderer, const std::str
 void GameLoop::Loop() {
     
     // Initialisation de la plancha
-    Paddle paddle(renderer, WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
+    Paddle paddle(win.getRenderer(), WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
 
-    std::vector<Brick> * bricks = createBricksFromFile(renderer, "grille1.txt", 60, 20, WIDTH, HEIGHT); // Réglage de la largeur et de la hauteur des briques
+    std::vector<Brick> * bricks = createBricksFromFile(win.getRenderer(), "grille1.txt", 60, 20, WIDTH, HEIGHT); // Réglage de la largeur et de la hauteur des briques
 
     // Initialisation de la balle
     Ball b1(paddle,bricks);
@@ -293,8 +227,7 @@ void GameLoop::Loop() {
                 }
             }
             
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
+            win.clear();
 
             // Mise à jour de l'affichage
             for (int i = 0; i < balls.size(); ++i) {
@@ -303,7 +236,7 @@ void GameLoop::Loop() {
                     balls.erase(balls.begin() + i);
                 } else {
                     balls[i].paddle = paddle;
-                    balls[i].draw(renderer);
+                    balls[i].draw(win.getRenderer());
                     balls[i].updatePosition(WIDTH, HEIGHT);
                 }
             }
@@ -324,11 +257,10 @@ void GameLoop::Loop() {
             }
 
             if(balls.empty()){
-                delete bricks;
                 quit = true;
             }
 
-            SDL_RenderPresent(renderer);
+            win.present();
         }
     }
 }
