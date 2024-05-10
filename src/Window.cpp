@@ -67,18 +67,18 @@ int Window::getHeight() const {
     return height;
 }
 
-SDL_Renderer* Window::getRenderer(){
-    return renderer.get();
+std::shared_ptr<SDL_Renderer> Window::getRenderer(){
+    return renderer;
 }
 
-SDL_Window* Window::getWindow(){
-    return window.get();
+std::shared_ptr<SDL_Window> Window::getWindow(){
+    return window;
 }
 
-TTF_Font* Window::getDefaultFont(){
-    return defaultFont.get();
+std::shared_ptr<TTF_Font> Window::getDefaultFont(){
+    return defaultFont;
 }
 
-TTF_Font* Window::getSelectedFont(){
-    return selectedFont.get();
+std::shared_ptr<TTF_Font> Window::getSelectedFont(){
+    return selectedFont;
 }

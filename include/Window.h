@@ -23,10 +23,10 @@ public:
     void present();
     int getWidth() const;
     int getHeight() const;
-    SDL_Renderer* getRenderer();
-    SDL_Window* getWindow();
-    TTF_Font* getDefaultFont();
-    TTF_Font* getSelectedFont();
+    std::shared_ptr<SDL_Renderer> getRenderer();
+    std::shared_ptr<SDL_Window> getWindow();
+    std::shared_ptr<TTF_Font> getDefaultFont();
+    std::shared_ptr<TTF_Font> getSelectedFont();
 };
 
 #endif // WINDOW_H

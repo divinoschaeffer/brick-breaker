@@ -87,9 +87,9 @@ void GameLoop::FirstPageLoop() {
         }
         // Rafraichissement de la page
         win.clear();
-        title.render(win.getRenderer(), WIDTH / 2, 50);
-        playTxt.render(win.getRenderer(), WIDTH / 2,  HEIGHT / 7, menuSelection == 0);
-        quitTxt.render(win.getRenderer(), WIDTH / 2, 2 * HEIGHT / 7, menuSelection == 1);
+        title.render(WIDTH / 2, 50);
+        playTxt.render(WIDTH / 2,  HEIGHT / 7, menuSelection == 0);
+        quitTxt.render(WIDTH / 2, 2 * HEIGHT / 7, menuSelection == 1);
         win.present();
         if (gamePage) {
             Loop();
@@ -167,9 +167,9 @@ std::shared_ptr<std::vector<Brick>> createBricksFromFile(SDL_Renderer* renderer,
 void GameLoop::Loop() {
     
     // Initialisation de la plancha
-    Paddle paddle(win.getRenderer(), WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
+    Paddle paddle(win.getRenderer().get(), WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
 
-    std::shared_ptr<std::vector<Brick>> bricks = createBricksFromFile(win.getRenderer(), "grille1.txt", 60, 20, WIDTH, HEIGHT);
+    std::shared_ptr<std::vector<Brick>> bricks = createBricksFromFile(win.getRenderer().get(), "grille1.txt", 60, 20, WIDTH, HEIGHT);
 
     // Initialisation de la balle
     Ball b1(paddle,bricks);
@@ -238,7 +238,7 @@ void GameLoop::Loop() {
                     balls.erase(balls.begin() + i);
                 } else {
                     balls[i].paddle = paddle;
-                    balls[i].draw(win.getRenderer());
+                    balls[i].draw(win.getRenderer().get());
                     balls[i].updatePosition(WIDTH, HEIGHT);
                 }
             }
