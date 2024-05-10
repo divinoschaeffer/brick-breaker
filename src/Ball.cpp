@@ -31,7 +31,7 @@ Vector2 Ball::getPosition(){
 }
 
 // Implémentation du constructeur avec spécification de paddle et bricks
-Ball::Ball(Paddle& pdl, std::vector<Brick>* brs) :
+Ball::Ball(Paddle& pdl, std::shared_ptr<std::vector<Brick>> brs) :
     paddle(pdl),
     bricks(brs)
 {

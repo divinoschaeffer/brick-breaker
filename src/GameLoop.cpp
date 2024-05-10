@@ -99,8 +99,9 @@ void GameLoop::FirstPageLoop() {
     }
 }
 
-std::vector<Brick> * createBricksFromFile(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
-    std::vector<Brick> * bricks = new std::vector<Brick>;
+std::shared_ptr<std::vector<Brick>> createBricksFromFile(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
+    // Créer le vecteur de briques avec std::make_unique
+    auto bricks = std::make_shared<std::vector<Brick>>();
 
     // Construire le chemin complet du fichier en utilisant le dossier "grilles"
     std::string filepath = "grilles/" + filename;
@@ -159,6 +160,7 @@ std::vector<Brick> * createBricksFromFile(SDL_Renderer* renderer, const std::str
 }
 
 
+
 /*
  * Boucle principale de jeu.
  */
@@ -167,7 +169,7 @@ void GameLoop::Loop() {
     // Initialisation de la plancha
     Paddle paddle(win.getRenderer(), WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
 
-    std::vector<Brick> * bricks = createBricksFromFile(win.getRenderer(), "grille1.txt", 60, 20, WIDTH, HEIGHT); // Réglage de la largeur et de la hauteur des briques
+    std::shared_ptr<std::vector<Brick>> bricks = createBricksFromFile(win.getRenderer(), "grille1.txt", 60, 20, WIDTH, HEIGHT);
 
     // Initialisation de la balle
     Ball b1(paddle,bricks);
