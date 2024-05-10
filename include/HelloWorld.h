@@ -16,6 +16,4 @@ public:
     static void OpenHelloWorld();
 };
 
-
-
 #endif //HELLOWORLD_H

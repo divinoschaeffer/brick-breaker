@@ -2,7 +2,89 @@
 // Created by Bryan on 13/04/2024.
 //
 
+#include <filesystem> // Pour accéder aux fonctionnalités de système de fichiers
+#include <fstream>
+#include <vector>
 #include "HelloWorld.h"
+#include "Ball.h"
+#include "Paddle.h"
+#include "Brick.h"
+
+#define WINDOW_X 640
+#define WINDOW_Y 480
+#define PAD_W 100
+#define PAD_H 10
+#define PAD_SPEED 60
+
+
+// Fonction pour créer des briques à partir d'un fichier ASCII
+std::vector<Brick> createBricksFromFile2(SDL_Renderer* renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
+    std::vector<Brick> bricks;
+
+    // Construire le chemin complet du fichier en utilisant le dossier "grilles"
+    std::string filepath = "grilles/" + filename;
+
+    // Vérifier si le fichier existe
+    if (!std::__fs::filesystem::exists(filepath)) {
+        std::cerr << "File does not exist: " << filepath << std::endl;
+        return bricks;
+    }
+
+    // Ouvrir le fichier
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        std::cerr << "Unable to open file: " << filepath << std::endl;
+        return bricks;
+    }
+
+    // Calculer la position y de la première ligne de briques
+    int startY = 10;
+
+    // Lire le fichier ligne par ligne
+    std::string line;
+    int y = 0;
+    while (std::getline(file, line)) {
+        // Calculer la position y de la ligne pour la centrer verticalement dans la fenêtre
+        int lineY = startY + y * (brickHeight + 10);
+
+        // Calculer l'espacement horizontal entre les briques
+        int horizontalSpace = (windowWidth - line.size() * brickWidth) / (line.size() + 1);
+
+        int x = 0;
+        for (char c : line) {
+            // Calculer la position x de la brique
+            int brickX = horizontalSpace + x * (brickWidth + horizontalSpace);
+
+            int brickY = lineY; // Position y de la brique
+            switch (c) {
+                case '0':
+                    // Brique indestructible
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 255, 255, 255}, -1);
+                    break;
+                case '1':
+                    // Brique normale avec 1 point de vie
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 0, 0, 255}, 1);
+                    break;
+                case '2':
+                    // Brique normale avec 2 points de vie
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{0, 255, 0, 255}, 2);
+                    break;
+                case '3':
+                    // Brique normale avec 3 points de vie
+                    bricks.emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{0, 255, 255, 255}, 3);
+                    break;
+            }
+            x++;
+        }
+        y++;
+    }
+
+    // Fermer le fichier
+    file.close();
+
+    return bricks;
+}
+
 
 HelloWorld::HelloWorld() {
     OpenHelloWorld();
@@ -17,7 +99,7 @@ void HelloWorld::OpenHelloWorld()
     }
 
     // Create a window
-    SDL_Window* window = SDL_CreateWindow("Brick Breaker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("Brick Breaker", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_X, WINDOW_Y, SDL_WINDOW_SHOWN);
     if (window == nullptr) {
         std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
         exit(1);
@@ -30,99 +112,103 @@ void HelloWorld::OpenHelloWorld()
         exit(1);
     }
 
-    // Clear the renderer
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+    Paddle paddle(renderer, WINDOW_X / 2 - (PAD_W / 2), WINDOW_Y - 40, PAD_W, PAD_H);
 
-    // Initialize SDL_ttf
-    if (TTF_Init() == -1) {
-        std::cerr << "SDL_ttf could not initialize! SDL_ttf Error: " << TTF_GetError() << std::endl;
-        exit(1);
-    }
+    std::vector<Brick> bricks = createBricksFromFile2(renderer, "grille1.txt", 60, 20, WINDOW_X, WINDOW_Y); // Réglage de la largeur et de la hauteur des briques
 
-    // Create a font
-    TTF_Font* font = TTF_OpenFont("fonts/minecraft_font.ttf", 32);
-    if (font == nullptr) {
-        std::cerr << "Font could not be loaded! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
+    // Variables pour le calcul du temps
+    Uint32 lastTime = SDL_GetTicks();
+    const Uint32 targetFrameTime = 1000 / 60; // Cible de 60 images par seconde
 
-    // Create a surface from the font
-    SDL_Color textColor = { 255, 255, 255 };
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Brick Breaker", textColor);
-    if (textSurface == nullptr) {
-        std::cerr << "Text surface could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS; // Milliseconds per frame
 
-    // Create a texture from the surface
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    if (textTexture == nullptr) {
-        std::cerr << "Text texture could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-
-    // Get the dimensions of the texture
-    const int textWidth = textSurface->w;
-    const int textHeight = textSurface->h;
-
-    // Set the position of the text
-    SDL_Rect textRect;
-    textRect.x = (640 - textWidth) / 2;
-    textRect.y = (480 - textHeight) / 2;
-    textRect.w = textWidth;
-    textRect.h = textHeight;
-
-    // Créer une surface à partir de l'image
-    SDL_Surface* imageSurface = IMG_Load("sprites/mbappe.jpeg");
-    if (imageSurface == nullptr) {
-        std::cerr << "Image surface could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-
-    // Créer une texture à partir de la surface de l'image
-    SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
-    if (imageTexture == nullptr) {
-        std::cerr << "Image texture could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-
-    // Obtenir les dimensions de la texture
-    int imageWidth = imageSurface->w;
-    int imageHeight = imageSurface->h;
-
-    // Définir la position de l'image (sous le texte)
-    SDL_Rect imageRect;
-    imageRect.x = (640 - imageWidth) / 2;
-    imageRect.y = (480 - textHeight) / 2 + textHeight + 10; // 10 pixels de marge
-    imageRect.w = imageWidth;
-    imageRect.h = imageHeight;
-
-    // Rendre la texture d'image
-    SDL_RenderCopy(renderer, imageTexture, nullptr, &imageRect);
-    // Render the text
-    SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
-
-
-    SDL_RenderPresent(renderer);
-
+    Uint32 frameStart;
+    int frameTime;
+    Ball b1;
+    b1.velocity = {1, -1};
+    b1.position = {320, 240};
+    b1.speed = 10.0f;
+    // Draw the ball
+    b1.color = {255, 0, 0, 255};
     // Wait for the user to close the window
     bool quit = false;
-    SDL_Event event;
     while (!quit) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                quit = true;
+        // Calcul du temps écoulé depuis la dernière trame
+        Uint32 currentTime = SDL_GetTicks();
+        Uint32 elapsedTime = currentTime - lastTime;
+
+        // Si le temps écoulé dépasse le temps cible pour une trame, effectuer une nouvelle trame
+        if (elapsedTime >= targetFrameTime) {
+
+            // Mettre à jour le temps de la dernière trame
+            lastTime = currentTime;
+
+            SDL_Event event;
+            while (SDL_PollEvent(&event)) {
+                switch (event.type) {
+                    case SDL_QUIT:
+                        quit = true;
+                        break;
+                    case SDL_KEYDOWN:
+                        switch (event.key.keysym.sym) {
+                            case SDLK_LEFT:
+                                paddle.moveLeft(PAD_SPEED , WINDOW_X);
+                                break;
+                            case SDLK_RIGHT:
+                                paddle.moveRight(PAD_SPEED , WINDOW_X);
+                                break;
+                            case SDLK_ESCAPE:
+                                std::cout << "Sortie du jeu." << std::endl;
+                                quit = true;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case SDL_MOUSEMOTION:
+                        // Déplacer la raquette en fonction de la position de la souris
+                        paddle.setPosition(event.motion.x - PAD_W / 2, WINDOW_Y - 40);
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+
+            paddle.draw();
+            for (const auto& brick : bricks) {
+                brick.draw();
+            }
+
+            SDL_RenderPresent(renderer);
+        }
+        frameStart = SDL_GetTicks();
+
+        // Clear the renderer
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        b1.draw(renderer);
+
+        // Update the ball
+        b1.updatePosition(640, 480);
+
+        // Update the screen
+        SDL_RenderPresent(renderer);
+
+        // Calculate the time it took to render the frame
+        frameTime = SDL_GetTicks() - frameStart;
+
+        // Delay the frame if needed
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);
         }
     }
 
     // Clean up resources
-    SDL_DestroyTexture(textTexture);
-    SDL_FreeSurface(textSurface);
-    TTF_CloseFont(font);
-    SDL_RenderCopy(renderer, imageTexture, nullptr, &imageRect);
-    SDL_RenderPresent(renderer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

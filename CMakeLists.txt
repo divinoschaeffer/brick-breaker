@@ -4,8 +4,26 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 cmake_minimum_required(VERSION 3.10)
 project(BrickBreaker VERSION 1.0.0)
 
+set(CMAKE_CXX_STANDARD 20)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
+
+
 add_executable(BrickBreaker src/Main.cpp
-                            src/HelloWorld.cpp)
+        src/Rectangle.cpp
+        src/Paddle.cpp
+        src/Brick.cpp
+        src/GameLoop.cpp
+        src/Text.cpp
+        src/SelectableText.cpp
+        src/Ball.cpp
+        src/Vector2.cpp
+        src/Rectangle.cpp
+        src/Paddle.cpp
+        src/Brick.cpp
+        src/Window.cpp
+)
+
 #[[
 # Trouver le package SDL2
 find_package(SDL2 REQUIRED)
