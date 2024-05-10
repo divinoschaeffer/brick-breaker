@@ -5,7 +5,7 @@
 #include "SelectableText.h"
 #include <iostream>
 
-void SelectableText::render(SDL_Renderer* renderer, const int posX, const int posY, const bool isSelected) {
+void SelectableText::render(SDL_Renderer* renderer, const int& posX, const int& posY, const bool &isSelected) {
     color = isSelected ? selectedColor : defaultColor;
     font = isSelected ? selectedFont : defaultFont;
     surface = TTF_RenderText_Blended(font, Text::text.c_str(), color);

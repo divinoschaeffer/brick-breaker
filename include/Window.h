@@ -8,10 +8,10 @@
 
 class Window {
 private:
-    std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> window;
-    std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> renderer;
-    std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> defaultFont;
-    std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)> selectedFont;
+    std::shared_ptr<SDL_Window> window;
+    std::shared_ptr<SDL_Renderer> renderer;
+    std::shared_ptr<TTF_Font> defaultFont;
+    std::shared_ptr<TTF_Font> selectedFont;
     int width;
     int height;
 

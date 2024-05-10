@@ -1,7 +1,7 @@
 #include "Text.h"
 #include <iostream>
 
-Text::Text(SDL_Renderer* renderer, SDL_Color color, const std::string& text, TTF_Font* font)
+Text::Text(SDL_Renderer* renderer, const SDL_Color &color, const std::string& text, TTF_Font* font)
     : renderer(renderer), color(color), text(text), font(font) {
     surface = TTF_RenderText_Solid(font, text.c_str(), color);
     if (surface == nullptr) {

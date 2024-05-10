@@ -5,7 +5,7 @@
 
 class Rectangle {
 public:
-    Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h);
+    Rectangle(SDL_Renderer* renderer, const int& x, const int& y, const int& w, const int& h);
 
     void draw() const;
     void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);

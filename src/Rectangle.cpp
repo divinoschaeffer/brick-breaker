@@ -1,6 +1,6 @@
 #include "Rectangle.h"
 
-Rectangle::Rectangle(SDL_Renderer* renderer, int x, int y, int w, int h)
+Rectangle::Rectangle(SDL_Renderer* renderer, const int& x, const int& y, const int& w, const int& h)
     : renderer(renderer), rect({x, y, w, h}) {
     color = {255, 255, 255, 255}; // Initialisation de la couleur par défaut
 }

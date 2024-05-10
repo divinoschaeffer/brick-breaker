@@ -13,10 +13,6 @@
 
 class GameLoop {
 public:
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    TTF_Font* defaultFont;
-    TTF_Font* selectedFont;
     SDL_Event event;
     SDL_Color defaultColor;
     SDL_Color selectedColor;

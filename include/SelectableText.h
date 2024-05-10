@@ -14,11 +14,11 @@ private:
     TTF_Font* defaultFont;
     TTF_Font* selectedFont;
 public:
-    SelectableText(SDL_Renderer* renderer, SDL_Color color, SDL_Color selectedColor, const std::string& text, TTF_Font* defaultFont, TTF_Font* selectedFont)
+    SelectableText(SDL_Renderer* renderer, const SDL_Color& color, const SDL_Color& selectedColor, const std::string& text, TTF_Font* defaultFont, TTF_Font* selectedFont)
         : Text(renderer, color, text, defaultFont), defaultColor(color), selectedColor(selectedColor), defaultFont(defaultFont), selectedFont(selectedFont) {
     }
 
-    void render(SDL_Renderer* renderer, const int posX, const int posY, const bool isSelected);
+    void render(SDL_Renderer* renderer, const int& posX, const int& posY, const bool& isSelected);
 };
 
 
