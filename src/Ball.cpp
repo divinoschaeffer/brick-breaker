@@ -44,8 +44,8 @@ Ball::Ball(Paddle& pdl, std::shared_ptr<std::vector<Brick>> brs) :
     texture = nullptr; // Will be set later
 }
 
-void Ball::draw(SDL_Renderer* renderer) const {
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+void Ball::draw(const std::shared_ptr<SDL_Renderer>& renderer) const {
+    SDL_SetRenderDrawColor(renderer.get(), color.r, color.g, color.b, color.a);
     for (int w = 0; w < radius * 2; w++)
     {
         for (int h = 0; h < radius * 2; h++)
@@ -54,7 +54,7 @@ void Ball::draw(SDL_Renderer* renderer) const {
             int dy = radius - h; // vertical offset
             if ((dx*dx + dy*dy) <= (radius * radius))
             {
-                SDL_RenderDrawPoint(renderer, position.x + dx, position.y + dy);
+                SDL_RenderDrawPoint(renderer.get(), position.x + dx, position.y + dy);
             }
         }
     }
@@ -119,4 +119,8 @@ void Ball::checkEveryBricks() {
 
 bool::Ball::isOut(int height) const {
     return position.y > height;
+}
+
+void Ball::setPaddle(Paddle& pad){
+    paddle = pad;
 }

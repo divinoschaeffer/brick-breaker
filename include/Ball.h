@@ -13,7 +13,7 @@
 #include <Paddle.h>
 
 class Ball {
-public:
+protected:
     Vector2 position;
     Vector2 velocity;
     float radius;
@@ -23,17 +23,19 @@ public:
     std::shared_ptr<std::vector<Brick>> bricks;
     Paddle paddle;
 
+public:
     Ball();
     Ball(const Ball& other);
     // Constructeur avec spécification de paddle et bricks
     Ball(Paddle& pdl, std::shared_ptr<std::vector<Brick>> brs);
     void getTexture();
-    void draw(SDL_Renderer* renderer) const;
+    void draw(const std::shared_ptr<SDL_Renderer>& renderer) const;
     void checkCollision(int screenWidth, int screenHeight);
     void checkEveryBricks();
     void updatePosition(int screenWidth, int screenHeight);
     bool isOut(int height) const;
     Vector2 getPosition();
+    void setPaddle(Paddle& pad);
 };
 
 

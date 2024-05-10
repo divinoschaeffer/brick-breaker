@@ -235,8 +235,8 @@ void GameLoop::Loop() {
                     // std::cout << "out" << std::endl;
                     balls.erase(balls.begin() + i);
                 } else {
-                    balls[i].paddle = paddle;
-                    balls[i].draw(win.getRenderer().get());
+                    balls[i].setPaddle(paddle);
+                    balls[i].draw(win.getRenderer());
                     balls[i].updatePosition(WIDTH, HEIGHT);
                 }
             }
