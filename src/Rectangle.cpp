@@ -1,13 +1,16 @@
 #include "Rectangle.h"
 
-Rectangle::Rectangle(SDL_Renderer* renderer, const int& x, const int& y, const int& w, const int& h)
-    : renderer(renderer), rect({x, y, w, h}) {
-    color = {255, 255, 255, 255}; // Initialisation de la couleur par défaut
+Rectangle::Rectangle(const std::shared_ptr<SDL_Renderer>& renderer, const int& x, const int& y, const int& w, const int& h)
+    : renderer(renderer), color{255, 255, 255, 255} {
+    rect.x = x;
+    rect.y = y;
+    rect.w = w;
+    rect.h = h;
 }
 
 void Rectangle::draw() const {
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderDrawColor(renderer.get(), color.r, color.g, color.b, color.a);
+    SDL_RenderFillRect(renderer.get(), &rect);
 }
 
 void Rectangle::setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {

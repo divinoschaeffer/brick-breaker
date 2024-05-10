@@ -1,7 +1,7 @@
 #include "Paddle.h"
 
 // Définition du constructeur
-Paddle::Paddle(SDL_Renderer* renderer, int x, int y, int w, int h)
+Paddle::Paddle(const std::shared_ptr<SDL_Renderer>& renderer, int x, int y, int w, int h)
     : Rectangle(renderer, x, y, w, h) {}
 
 // Définition de la méthode pour déplacer le pad vers la gauche

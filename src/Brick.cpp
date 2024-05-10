@@ -1,12 +1,12 @@
 #include "Brick.h"
 
-Brick::Brick(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, int hitPoints)
+Brick::Brick(const std::shared_ptr<SDL_Renderer>& renderer, int x, int y, int w, int h, SDL_Color color, int hitPoints)
     : renderer(renderer), rect({x, y, w, h}), color(color), hitPoints(hitPoints) {}
 
 void Brick::draw() const {
     if (!isDestroyed()) {
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-        SDL_RenderFillRect(renderer, &rect);
+        SDL_SetRenderDrawColor(renderer.get(), color.r, color.g, color.b, color.a);
+        SDL_RenderFillRect(renderer.get(), &rect);
     }
 }
 
@@ -36,4 +36,8 @@ int Brick::getH() const {
 
 int Brick::getHitPoints() const {
     return hitPoints;
+}
+
+void Brick::setColor(const SDL_Color& color){
+    this->color = color;
 }

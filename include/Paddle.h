@@ -8,7 +8,7 @@ class Paddle : public Rectangle {
 public:
     Vector2 velocity;
     // Constructeur : appelle le constructeur de la classe de base Rectangle
-    Paddle(SDL_Renderer* renderer, int x, int y, int w, int h);
+    Paddle(const std::shared_ptr<SDL_Renderer>& renderer, int x, int y, int w, int h);
 
     // Méthode pour déplacer le pad vers la gauche
     void moveLeft(int speed, int window_width);

@@ -3,10 +3,11 @@
 
 #include <vector>
 #include <SDL2/SDL.h>
+#include <memory>
 
 class Brick {
 public:
-    Brick(SDL_Renderer* renderer, int x, int y, int w, int h, SDL_Color color, int hitPoints = 2); // Défaut à 2 points de vie
+    Brick(const std::shared_ptr<SDL_Renderer>& renderer, int x, int y, int w, int h, SDL_Color color, int hitPoints = 2);
 
     void draw() const;
     void hit(); // Méthode pour indiquer qu'une brique a été touchée
@@ -18,10 +19,12 @@ public:
     int getW() const;
     int getH() const;
     int getHitPoints() const;
-    SDL_Color color;
-private:
-    SDL_Renderer* renderer;
+    void setColor(const SDL_Color& color);
+    
+protected:
+    std::shared_ptr<SDL_Renderer> renderer;
     SDL_Rect rect;
+    SDL_Color color;
     int hitPoints; // Nombre de points de vie de la brique
 };
 

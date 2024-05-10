@@ -10,7 +10,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
 
 
 add_executable(BrickBreaker src/Main.cpp
-        src/HelloWorld.cpp
         src/Rectangle.cpp
         src/Paddle.cpp
         src/Brick.cpp

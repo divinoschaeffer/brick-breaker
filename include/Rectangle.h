@@ -2,10 +2,11 @@
 #define RECTANGLE_H
 
 #include <SDL2/SDL.h>
+#include <memory>
 
 class Rectangle {
 public:
-    Rectangle(SDL_Renderer* renderer, const int& x, const int& y, const int& w, const int& h);
+    Rectangle(const std::shared_ptr<SDL_Renderer>& renderer, const int& x, const int& y, const int& w, const int& h);
 
     void draw() const;
     void setColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
@@ -19,7 +20,7 @@ public:
     int getW() const;
     int getH() const;
 private:
-    SDL_Renderer* renderer;
+    std::shared_ptr<SDL_Renderer> renderer;
     SDL_Rect rect;
     SDL_Color color;
 };
