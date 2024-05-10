@@ -10,7 +10,6 @@ Ball::Ball() : paddle(Paddle(nullptr, 0, 0, 0, 0)) {
     radius = 10.0f;
     speed = 10.0f;
     color = {255, 255, 255, 255}; // White color
-    texture = nullptr; // Will be set later
     paddle = Paddle(nullptr, 0, 0, 0, 0);
 }
 
@@ -21,7 +20,6 @@ Ball::Ball() : paddle(Paddle(nullptr, 0, 0, 0, 0)) {
         radius(other.radius),
         speed(other.speed),
         color(other.color),
-        texture(nullptr), // Will be set later
         bricks(other.bricks), // Copying the pointer, not the data
         paddle(other.paddle) // Copying the Paddle object
     {}
@@ -41,7 +39,6 @@ Ball::Ball(Paddle& pdl, std::shared_ptr<std::vector<Brick>> brs) :
     radius = 10.0f;
     speed = 10.0f;
     color = {255, 0, 0, 255}; // White color
-    texture = nullptr; // Will be set later
 }
 
 void Ball::draw(const std::shared_ptr<SDL_Renderer>& renderer) const {

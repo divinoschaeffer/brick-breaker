@@ -19,7 +19,6 @@ protected:
     float radius;
     float speed;
     SDL_Color color;
-    SDL_Texture* texture; // Texture de la balle si on en met une
     std::shared_ptr<std::vector<Brick>> bricks;
     Paddle paddle;
 
@@ -28,7 +27,6 @@ public:
     Ball(const Ball& other);
     // Constructeur avec spécification de paddle et bricks
     Ball(Paddle& pdl, std::shared_ptr<std::vector<Brick>> brs);
-    void getTexture();
     void draw(const std::shared_ptr<SDL_Renderer>& renderer) const;
     void checkCollision(int screenWidth, int screenHeight);
     void checkEveryBricks();
