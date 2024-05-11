@@ -121,3 +121,9 @@ bool::Ball::isOut(int height) const {
 void Ball::setPaddle(Paddle& pad){
     paddle = pad;
 }
+
+void Ball::setPostion(const int &x, const int &y)
+{
+    this->position.x = x;
+    this->position.y = y;
+}

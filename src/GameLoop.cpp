@@ -25,10 +25,35 @@ std::vector<SDL_Color> brickColors = {
     {0, 0, 0, 0},
     {252, 169, 133, 255}, // Rouge
     {255, 237, 81, 255}, // Jaune
-    {133, 202, 93, 255} // Vert
+    {133, 202, 93, 255}, // Vert
+    {0, 0, 0, 250} // Bleu
 };
 void::GameLoop::addBall(Ball& b){
     balls.push_back(b);
+}
+
+void GameLoop::applyModifier(const std::shared_ptr<Modifier> &modifier, const std::shared_ptr<std::vector<Brick>> &bricks, Paddle &pad)
+{
+    std::cout << "apply modifier:" << std::endl;
+    ModifierType type = modifier->getType();
+    switch (type)
+    {
+    case ModifierType::None:
+        std::cout << "None" << std::endl;
+        break;
+    case ModifierType::MultiBall:
+        std::cout << "Multiball" << std::endl;
+        multiBallBonus();
+    default:
+        break;
+    }
+}
+
+void GameLoop::multiBallBonus()
+{
+    Ball b1(balls.back());
+    b1.setPostion(b1.getPosition().x + 2, b1.getPosition().y);
+    addBall(b1);
 }
 
 GameLoop::GameLoop(): win("Brick Breaker", WIDTH, HEIGHT) {
@@ -102,6 +127,7 @@ void GameLoop::FirstPageLoop() {
 std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
     // Créer le vecteur de briques avec std::make_shared
     auto bricks = std::make_shared<std::vector<Brick>>();
+    std::shared_ptr<Modifier> multiBallModifier = std::make_shared<MultiBall>();
 
     // Construire le chemin complet du fichier en utilisant le dossier "grilles"
     std::string filepath = "grilles/" + filename;
@@ -142,6 +168,9 @@ std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<S
                 case '0':
                     // Brique indestructible (blanche)
                     bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 255, 255, 255}, -1);
+                    break;
+                case '4':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], multiBallModifier, 3);
                     break;
                 default:
                     int hp = c - '0';
@@ -247,6 +276,7 @@ void GameLoop::Loop() {
             // Retrait des briques si elles n'ont plus de points de vie
             for (int i = bricks->size() - 1; i >= 0; --i) {
                 if ((*bricks)[i].getHitPoints() <= 0) {
+                    if((*bricks)[i].getModifier() != nullptr)applyModifier((*bricks)[i].getModifier(), bricks, paddle);
                     bricks->erase(bricks->begin() + i);
                 }
             }
