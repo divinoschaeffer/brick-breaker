@@ -47,6 +47,11 @@ void Brick::setColor(const SDL_Color& color){
     this->color = color;
 }
 
+SDL_Color Brick::getColor()
+{
+    return color;
+}
+
 void Brick::setModifier(const std::shared_ptr<Modifier>& modifier){
     this->modifier = modifier;
 }

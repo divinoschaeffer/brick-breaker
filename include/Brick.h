@@ -22,6 +22,7 @@ public:
     int getH() const;
     int getHitPoints() const;
     void setColor(const SDL_Color& color);
+    SDL_Color getColor();
     void setModifier(const std::shared_ptr<Modifier>& modifier);
     std::shared_ptr<Modifier> getModifier() const;
     

@@ -90,25 +90,46 @@ void Ball::checkCollision(int screenWidth, int screenHeight) {
 
 }
 
+SDL_Color decreaseBrightness(const SDL_Color& color, const int& amount) {
+    int r = color.r - amount;
+    int g = color.g - amount;
+    int b = color.b - amount;
+
+    // Assurez-vous que les valeurs restent dans la plage [0, 255]
+    r = std::max(0, std::min(r, 255));
+    g = std::max(0, std::min(g, 255));
+    b = std::max(0, std::min(b, 255));
+
+    return {static_cast<Uint8>(r), static_cast<Uint8>(g), static_cast<Uint8>(b), color.a};
+}
+
 // Check every bricks from the list
 void Ball::checkEveryBricks() {
     int brickHeight = (*bricks)[0].getH();
     int brickWidth = (*bricks)[0].getW();
 
 
+    auto processBrickCollision = [&](Brick& brick, bool hitXAxis) {
+        brick.hit();
+        if (brick.getModifier()) 
+            brick.setColor(decreaseBrightness(brick.getColor(), 30));
+        if (hitXAxis)
+            velocity.x = -velocity.x;
+        else
+            velocity.y = -velocity.y;
+    };
+
     for (auto& brick : *bricks) {
         if ((position.x >= brick.getX() && position.x <= brick.getX() + brickWidth) &&
             (position.y - radius <= brick.getY() + brickHeight && position.y + radius >= brick.getY()))
         {
-            brick.hit();
-            velocity.y = -velocity.y;
+            processBrickCollision(brick, false);
             return;
         }
         else if ((position.y >= brick.getY() && position.y <= brick.getY() + brickHeight) &&
-            (position.x - radius <= brick.getX() + brickWidth && position.x + radius >= brick.getX()))
+                (position.x - radius <= brick.getX() + brickWidth && position.x + radius >= brick.getX()))
         {
-            brick.hit();
-            velocity.x = -velocity.x;
+            processBrickCollision(brick, true);
             return;
         }
     }

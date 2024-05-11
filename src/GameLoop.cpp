@@ -26,7 +26,7 @@ std::vector<SDL_Color> brickColors = {
     {252, 169, 133, 255}, // Rouge
     {255, 237, 81, 255}, // Jaune
     {133, 202, 93, 255}, // Vert
-    {0, 0, 0, 250} // Bleu
+    {173, 216, 230, 255} // Bleu
 };
 void::GameLoop::addBall(Ball& b){
     balls.push_back(b);
@@ -52,7 +52,7 @@ void GameLoop::applyModifier(const std::shared_ptr<Modifier> &modifier, const st
 void GameLoop::multiBallBonus()
 {
     Ball b1(balls.back());
-    b1.setPostion(b1.getPosition().x + 2, b1.getPosition().y);
+    b1.setPostion(b1.getPosition().x + 5, b1.getPosition().y);
     addBall(b1);
 }
 
@@ -282,7 +282,7 @@ void GameLoop::Loop() {
             }
             // Dessiner les briques + Mise à jour de la couleur selon les points de vie de la brique
             for (auto& brick : *bricks) {
-                brick.setColor(brickColors[brick.getHitPoints()]);
+                if(brick.getModifier() == nullptr) brick.setColor(brickColors[brick.getHitPoints()]);
                 brick.draw();
             }
 
