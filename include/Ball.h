@@ -34,6 +34,9 @@ public:
     bool isOut(int height) const;
     Vector2 getPosition();
     void setPaddle(Paddle& pad);
+    void setPostion(const int& x, const int& y);
+    void setSpeed(float speed);
+    float getSpeed();
 };
 
 

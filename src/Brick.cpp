@@ -1,7 +1,12 @@
 #include "Brick.h"
 
 Brick::Brick(const std::shared_ptr<SDL_Renderer>& renderer, int x, int y, int w, int h, SDL_Color color, int hitPoints)
-    : renderer(renderer), rect({x, y, w, h}), color(color), hitPoints(hitPoints) {}
+    : renderer(renderer), rect({x, y, w, h}), color(color), hitPoints(hitPoints) {
+        modifier = nullptr;
+    }
+
+Brick::Brick(const std::shared_ptr<SDL_Renderer>& renderer, int x, int y, int w, int h, SDL_Color color,const std::shared_ptr<Modifier>& modifier, int hitPoints)
+    : renderer(renderer), rect({x, y, w, h}), color(color), hitPoints(hitPoints), modifier(modifier){}
 
 void Brick::draw() const {
     if (!isDestroyed()) {
@@ -40,4 +45,18 @@ int Brick::getHitPoints() const {
 
 void Brick::setColor(const SDL_Color& color){
     this->color = color;
+}
+
+SDL_Color Brick::getColor()
+{
+    return color;
+}
+
+void Brick::setModifier(const std::shared_ptr<Modifier>& modifier){
+    this->modifier = modifier;
+}
+
+std::shared_ptr<Modifier> Brick::getModifier() const
+{
+    return modifier;
 }

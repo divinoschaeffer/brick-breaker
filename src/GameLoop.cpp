@@ -25,15 +25,75 @@ std::vector<SDL_Color> brickColors = {
     {0, 0, 0, 0},
     {252, 169, 133, 255}, // Rouge
     {255, 237, 81, 255}, // Jaune
-    {133, 202, 93, 255} // Vert
+    {133, 202, 93, 255}, // Vert
+    {173, 216, 230, 255}, // Bleu
+    //{220, 180, 230, 255}, // Violet
+    //{255, 218, 185, 255} // orange
 };
 void::GameLoop::addBall(Ball& b){
     balls.push_back(b);
 }
 
+void GameLoop::applyModifier(const std::shared_ptr<Modifier> &modifier, const std::shared_ptr<std::vector<Brick>> &bricks, Paddle &pad)
+{
+    std::cout << "apply modifier:" << std::endl;
+    ModifierType type = modifier->getType();
+    switch (type)
+    {
+    case ModifierType::None:
+        std::cout << "None" << std::endl;
+        break;
+    case ModifierType::MultiBall:
+        std::cout << "Multiball" << std::endl;
+        BonusMultiball();
+    case ModifierType::BonusSpeedBall:
+        std::cout << "BonusSpeedBall" << std::endl;
+        BonusSpeedBall();
+    case ModifierType::BonusPaddle:
+        std::cout << "BonusPaddle" << std::endl;
+        BonusPaddle(pad);
+    case ModifierType::MalusPaddle:
+        std::cout << "MalusPaddle" << std::endl;
+        MalusPaddle(pad);
+    default:
+        break;
+    }
+}
+
+void GameLoop::BonusMultiball()
+{
+    Ball b1(balls.back());
+    b1.setPostion(b1.getPosition().x + 5, b1.getPosition().y);
+    addBall(b1);
+}
+
+void GameLoop::BonusSpeedBall()
+{
+    for(auto b : balls){
+        b.setSpeed(b.getSpeed() - static_cast<float>(10));
+    }
+}
+
+void GameLoop::BonusPaddle(Paddle &pad)
+{
+    pad.setSize(pad.getW() + 20, pad.getH());
+}
+
+void GameLoop::MalusPaddle(Paddle &pad)
+{
+    pad.setSize(pad.getW() - 20, pad.getH());
+}
+
+void GameLoop::nextLevel()
+{
+    level = (level + 1) % (maxLevel + 1);
+}
+
 GameLoop::GameLoop(): win("Brick Breaker", WIDTH, HEIGHT) {
     defaultColor = {255, 255, 255, 255};  // Blanc
     selectedColor = {255, 0, 0, 255};  // Rouge
+    level = 1;
+    maxLevel = 3;
 }
 
 GameLoop::~GameLoop() {}
@@ -102,6 +162,10 @@ void GameLoop::FirstPageLoop() {
 std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<SDL_Renderer>& renderer, const std::string& filename, int brickWidth, int brickHeight, int windowWidth, int windowHeight) {
     // Créer le vecteur de briques avec std::make_shared
     auto bricks = std::make_shared<std::vector<Brick>>();
+    std::shared_ptr<Modifier> multiBallModifier = std::make_shared<MultiBall>();
+    std::shared_ptr<Modifier> BonusSpeedBallModifier = std::make_shared<BonusSpeedBall>();
+    std::shared_ptr<Modifier> BonusPaddleModifier = std::make_shared<BonusPaddle>();
+    std::shared_ptr<Modifier> MalusPaddleModifier = std::make_shared<MalusPaddle>();
 
     // Construire le chemin complet du fichier en utilisant le dossier "grilles"
     std::string filepath = "grilles/" + filename;
@@ -143,6 +207,18 @@ std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<S
                     // Brique indestructible (blanche)
                     bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, SDL_Color{255, 255, 255, 255}, -1);
                     break;
+                case '4':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], multiBallModifier, 3);
+                    break;
+                case '5':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], BonusSpeedBallModifier, 3);
+                    break;
+                case '6':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], BonusPaddleModifier, 3);
+                    break;
+                case '7':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], MalusPaddleModifier, 1);
+                    break;
                 default:
                     int hp = c - '0';
                     bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[hp], hp);
@@ -159,6 +235,10 @@ std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<S
     return bricks;
 }
 
+std::string generateFileName(int value) {
+    return "grille" + std::to_string(value) + ".txt";
+}
+
 /*
  * Boucle principale de jeu.
  */
@@ -166,8 +246,12 @@ void GameLoop::Loop() {
     
     // Initialisation de la plancha
     Paddle paddle(win.getRenderer(), WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
+    std::cout << "Level: " << std::to_string(level) << std::endl;
 
-    std::shared_ptr<std::vector<Brick>> bricks = createBricksFromFile(win.getRenderer(), "grille1.txt", 60, 20, WIDTH, HEIGHT);
+    std::string fileName = generateFileName(level);
+
+    std::cout << fileName << std::endl;
+    std::shared_ptr<std::vector<Brick>> bricks = createBricksFromFile(win.getRenderer(), fileName, 60, 20, WIDTH, HEIGHT);
 
     // Initialisation de la balle
     Ball b1(paddle,bricks);
@@ -195,6 +279,7 @@ void GameLoop::Loop() {
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
                     case SDL_QUIT:
+                        level = 1;
                         quit = true;
                         break;
                     case SDL_KEYDOWN:
@@ -211,6 +296,7 @@ void GameLoop::Loop() {
                                 std::cout << "Sortie du jeu." << std::endl;
                                 balls.clear();
                                 //delete bricks;
+                                level = 1;
                                 quit = true;
                                 break;
                             default:
@@ -247,16 +333,23 @@ void GameLoop::Loop() {
             // Retrait des briques si elles n'ont plus de points de vie
             for (int i = bricks->size() - 1; i >= 0; --i) {
                 if ((*bricks)[i].getHitPoints() <= 0) {
+                    if((*bricks)[i].getModifier() != nullptr)applyModifier((*bricks)[i].getModifier(), bricks, paddle);
                     bricks->erase(bricks->begin() + i);
                 }
             }
             // Dessiner les briques + Mise à jour de la couleur selon les points de vie de la brique
             for (auto& brick : *bricks) {
-                brick.setColor(brickColors[brick.getHitPoints()]);
+                if(brick.getModifier() == nullptr) brick.setColor(brickColors[brick.getHitPoints()]);
                 brick.draw();
             }
 
-            if(balls.empty()){
+            if((*bricks).empty()){
+                nextLevel();
+                balls.clear();
+                quit = true;
+            }
+            else if(balls.empty()){
+                level = 1;
                 quit = true;
             }
 

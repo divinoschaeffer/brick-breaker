@@ -19,10 +19,19 @@ public:
     GameLoop();
     Window win;
     std::vector<Ball> balls;
+    int level;
+    int maxLevel;
 
     void FirstPageLoop();
     void Loop();
     void addBall(Ball& b);
+    void applyModifier(const std::shared_ptr<Modifier>& modifier, const std::shared_ptr<std::vector<Brick>>& bricks, Paddle& pad);
+    void BonusMultiball();
+    void BonusSpeedBall();
+    void BonusPaddle(Paddle& pad);
+    void MalusPaddle(Paddle& pad);
+    void nextLevel();
+
     ~GameLoop();
 };
 
