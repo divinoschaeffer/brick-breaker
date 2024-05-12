@@ -5,7 +5,9 @@
 enum class ModifierType {
     None,
     MultiBall,
-    // Ajoutez d'autres types de modifications ici si nécessaire
+    BonusSpeedBall,
+    BonusPaddle,
+    MalusPaddle
 };
 
 // Classe abstraite représentant une modification
@@ -17,6 +19,27 @@ public:
 };
 
 class MultiBall : public Modifier {
+public:
+    void apply() override;
+
+    ModifierType getType() const override;
+};
+
+class BonusSpeedBall: public Modifier{
+    public:
+        void apply() override;
+
+        ModifierType getType() const override;
+};
+
+class BonusPaddle: public Modifier{
+public:
+    void apply() override;
+
+    ModifierType getType() const override;
+};
+
+class MalusPaddle: public Modifier{
 public:
     void apply() override;
 

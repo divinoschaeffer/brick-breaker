@@ -24,7 +24,10 @@ public:
     void Loop();
     void addBall(Ball& b);
     void applyModifier(const std::shared_ptr<Modifier>& modifier, const std::shared_ptr<std::vector<Brick>>& bricks, Paddle& pad);
-    void multiBallBonus();
+    void BonusMultiball();
+    void BonusSpeedBall();
+    void BonusPaddle(Paddle& pad);
+    void MalusPaddle(Paddle& pad);
 
     ~GameLoop();
 };

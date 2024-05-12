@@ -148,3 +148,13 @@ void Ball::setPostion(const int &x, const int &y)
     this->position.x = x;
     this->position.y = y;
 }
+
+void Ball::setSpeed(float speed)
+{
+    this->speed = speed;
+}
+
+float Ball::getSpeed()
+{
+    return speed;
+}

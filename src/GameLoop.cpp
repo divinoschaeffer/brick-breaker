@@ -26,7 +26,9 @@ std::vector<SDL_Color> brickColors = {
     {252, 169, 133, 255}, // Rouge
     {255, 237, 81, 255}, // Jaune
     {133, 202, 93, 255}, // Vert
-    {173, 216, 230, 255} // Bleu
+    {173, 216, 230, 255}, // Bleu
+    //{220, 180, 230, 255}, // Violet
+    //{255, 218, 185, 255} // orange
 };
 void::GameLoop::addBall(Ball& b){
     balls.push_back(b);
@@ -43,17 +45,43 @@ void GameLoop::applyModifier(const std::shared_ptr<Modifier> &modifier, const st
         break;
     case ModifierType::MultiBall:
         std::cout << "Multiball" << std::endl;
-        multiBallBonus();
+        BonusMultiball();
+    case ModifierType::BonusSpeedBall:
+        std::cout << "BonusSpeedBall" << std::endl;
+        BonusSpeedBall();
+    case ModifierType::BonusPaddle:
+        std::cout << "BonusPaddle" << std::endl;
+        BonusPaddle(pad);
+    case ModifierType::MalusPaddle:
+        std::cout << "MalusPaddle" << std::endl;
+        MalusPaddle(pad);
     default:
         break;
     }
 }
 
-void GameLoop::multiBallBonus()
+void GameLoop::BonusMultiball()
 {
     Ball b1(balls.back());
     b1.setPostion(b1.getPosition().x + 5, b1.getPosition().y);
     addBall(b1);
+}
+
+void GameLoop::BonusSpeedBall()
+{
+    for(auto b : balls){
+        b.setSpeed(b.getSpeed() - static_cast<float>(10));
+    }
+}
+
+void GameLoop::BonusPaddle(Paddle &pad)
+{
+    pad.setSize(pad.getW() + 20, pad.getH());
+}
+
+void GameLoop::MalusPaddle(Paddle &pad)
+{
+    pad.setSize(pad.getW() - 20, pad.getH());
 }
 
 GameLoop::GameLoop(): win("Brick Breaker", WIDTH, HEIGHT) {
@@ -128,6 +156,9 @@ std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<S
     // Créer le vecteur de briques avec std::make_shared
     auto bricks = std::make_shared<std::vector<Brick>>();
     std::shared_ptr<Modifier> multiBallModifier = std::make_shared<MultiBall>();
+    std::shared_ptr<Modifier> BonusSpeedBallModifier = std::make_shared<BonusSpeedBall>();
+    std::shared_ptr<Modifier> BonusPaddleModifier = std::make_shared<BonusPaddle>();
+    std::shared_ptr<Modifier> MalusPaddleModifier = std::make_shared<MalusPaddle>();
 
     // Construire le chemin complet du fichier en utilisant le dossier "grilles"
     std::string filepath = "grilles/" + filename;
@@ -171,6 +202,15 @@ std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<S
                     break;
                 case '4':
                     bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], multiBallModifier, 3);
+                    break;
+                case '5':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], BonusSpeedBallModifier, 3);
+                    break;
+                case '6':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], BonusPaddleModifier, 3);
+                    break;
+                case '7':
+                    bricks->emplace_back(renderer, brickX, brickY, brickWidth, brickHeight, brickColors[4], MalusPaddleModifier, 1);
                     break;
                 default:
                     int hp = c - '0';
