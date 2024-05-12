@@ -60,7 +60,7 @@ void Ball::draw(const std::shared_ptr<SDL_Renderer>& renderer) const {
 void Ball::updatePosition(int screenWidth, int screenHeight) {
     position = position + velocity * speed;
     checkCollision(screenWidth, screenHeight);
-    checkEveryBricks();
+    if(!(*bricks).empty())checkEveryBricks();
 }
 
 void Ball::checkCollision(int screenWidth, int screenHeight) {

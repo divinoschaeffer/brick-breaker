@@ -19,6 +19,8 @@ public:
     GameLoop();
     Window win;
     std::vector<Ball> balls;
+    int level;
+    int maxLevel;
 
     void FirstPageLoop();
     void Loop();
@@ -28,6 +30,7 @@ public:
     void BonusSpeedBall();
     void BonusPaddle(Paddle& pad);
     void MalusPaddle(Paddle& pad);
+    void nextLevel();
 
     ~GameLoop();
 };

@@ -84,9 +84,16 @@ void GameLoop::MalusPaddle(Paddle &pad)
     pad.setSize(pad.getW() - 20, pad.getH());
 }
 
+void GameLoop::nextLevel()
+{
+    level = (level + 1) % (maxLevel + 1);
+}
+
 GameLoop::GameLoop(): win("Brick Breaker", WIDTH, HEIGHT) {
     defaultColor = {255, 255, 255, 255};  // Blanc
     selectedColor = {255, 0, 0, 255};  // Rouge
+    level = 1;
+    maxLevel = 3;
 }
 
 GameLoop::~GameLoop() {}
@@ -228,6 +235,10 @@ std::shared_ptr<std::vector<Brick>> createBricksFromFile(const std::shared_ptr<S
     return bricks;
 }
 
+std::string generateFileName(int value) {
+    return "grille" + std::to_string(value) + ".txt";
+}
+
 /*
  * Boucle principale de jeu.
  */
@@ -235,8 +246,12 @@ void GameLoop::Loop() {
     
     // Initialisation de la plancha
     Paddle paddle(win.getRenderer(), WIDTH / 2 - (PAD_W / 2), HEIGHT - 40, PAD_W, PAD_H);
+    std::cout << "Level: " << std::to_string(level) << std::endl;
 
-    std::shared_ptr<std::vector<Brick>> bricks = createBricksFromFile(win.getRenderer(), "grille1.txt", 60, 20, WIDTH, HEIGHT);
+    std::string fileName = generateFileName(level);
+
+    std::cout << fileName << std::endl;
+    std::shared_ptr<std::vector<Brick>> bricks = createBricksFromFile(win.getRenderer(), fileName, 60, 20, WIDTH, HEIGHT);
 
     // Initialisation de la balle
     Ball b1(paddle,bricks);
@@ -264,6 +279,7 @@ void GameLoop::Loop() {
             while (SDL_PollEvent(&event)) {
                 switch (event.type) {
                     case SDL_QUIT:
+                        level = 1;
                         quit = true;
                         break;
                     case SDL_KEYDOWN:
@@ -280,6 +296,7 @@ void GameLoop::Loop() {
                                 std::cout << "Sortie du jeu." << std::endl;
                                 balls.clear();
                                 //delete bricks;
+                                level = 1;
                                 quit = true;
                                 break;
                             default:
@@ -326,7 +343,13 @@ void GameLoop::Loop() {
                 brick.draw();
             }
 
-            if(balls.empty()){
+            if((*bricks).empty()){
+                nextLevel();
+                balls.clear();
+                quit = true;
+            }
+            else if(balls.empty()){
+                level = 1;
                 quit = true;
             }
 
